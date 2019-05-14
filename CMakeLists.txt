@@ -17,7 +17,7 @@ add_executable(depixelization ${SOURCE_DIR}/main.cpp)
 include(${CMAKE_DIR}/LinkSTB.cmake)
 LinkSTB(depixelization PRIVATE)
 
-find_package(Boost REQUIRED)
+find_package(Boost 1.70 REQUIRED)
 
 # Configure the executable
 target_link_libraries(depixelization PUBLIC reshaper)

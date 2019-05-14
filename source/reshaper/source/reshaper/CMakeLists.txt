@@ -12,7 +12,7 @@ add_library(reshaper STATIC ${sources} ${includes})
 add_dependencies(reshaper reshaper-impl)
 
 # Find the third party libraries
-find_package(Boost REQUIRED)
+find_package(Boost 1.70 REQUIRED)
 
 # Link things
 LinkSTB(reshaper PRIVATE)

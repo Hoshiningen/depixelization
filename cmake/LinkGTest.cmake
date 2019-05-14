@@ -24,4 +24,6 @@ macro(LinkGTest TARGET ACCESS)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     target_link_libraries(${TARGET} ${ACCESS} gtest_main)
     target_include_directories(${TARGET} ${ACCESS} ${googletest_SOURCE_DIR}/include)
+
+    add_dependencies(${TARGET} gtest_main)
 endmacro()
