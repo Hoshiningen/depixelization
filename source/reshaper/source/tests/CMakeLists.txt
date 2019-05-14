@@ -34,5 +34,8 @@ else()
     target_compile_options(reshaper-tests PRIVATE -w)
 endif()
 
-gtest_add_tests(reshaper-tests "" ${sources})
+gtest_add_tests(
+    TARGET reshaper-tests
+    SOURCES ${sources}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIG>)
     
