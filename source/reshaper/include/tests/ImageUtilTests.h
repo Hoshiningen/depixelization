@@ -9,7 +9,7 @@
 
 using namespace dpa::image;
 
-class ImageTests : public ::testing::Test
+class ImageUtilTests : public ::testing::Test
 {
 protected:
 
@@ -62,6 +62,6 @@ protected:
 
 protected:
 
-    std::filesystem::path m_imagePath{ "../../images/curve_test.png" };
+    std::filesystem::path m_imagePath{ "../../images/enemy_2.png" };
     std::filesystem::path m_blankPath{ "../../images/newImage.png" };
 };

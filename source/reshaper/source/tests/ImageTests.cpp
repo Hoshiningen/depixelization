@@ -1,5 +1,7 @@
 #include <ImageTests.h>
 
+#include <Image.h>
+
 TEST_F(ImageTests, WriteNewImage)
 {
     auto pixelConfig = NewImagePixelConfiguration();

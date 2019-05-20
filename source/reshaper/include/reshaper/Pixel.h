@@ -6,7 +6,6 @@
 
 namespace dpa::image
 {
-
 // Type traits to ensure our channel types are only
 // specialized with valid stb_image types
 
@@ -52,6 +51,9 @@ template<typename BitDepth, typename = EnableIfSTBBitDepth<BitDepth>>
 using RGB = std::tuple<BitDepth, BitDepth, BitDepth>;
 
 template<typename BitDepth, typename = EnableIfSTBBitDepth<BitDepth>>
+using YCbCr = std::tuple<BitDepth, BitDepth, BitDepth>;
+
+template<typename BitDepth, typename = EnableIfSTBBitDepth<BitDepth>>
 using RGBA = std::tuple<BitDepth, BitDepth, BitDepth, BitDepth>;
 
 template<template<typename> class Channels>
@@ -78,6 +80,12 @@ struct channel_count<YA>
 
 template<>
 struct channel_count<RGB>
+{
+    static constexpr int value = 3;
+};
+
+template<>
+struct channel_count<YCbCr>
 {
     static constexpr int value = 3;
 };
