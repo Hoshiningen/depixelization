@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <Pixel.h>
@@ -158,7 +159,8 @@ std::optional<std::tuple<int, int>> Image<Channels, BitDepth>::load(const std::f
 {
     static std::array<std::string, 10> extensions =
     {
-        ".jpeg", ".jpg", ".png", ".tga", ".bmp", ".psd", ".gif", ".hdr", ".pic", ".pnm"
+        ".jpeg", ".jpg", ".png", ".tga", ".bmp",
+        ".psd", ".gif", ".hdr", ".pic", ".pnm"
     };
 
     if (!std::filesystem::is_regular_file(filePath) ||
@@ -335,100 +337,5 @@ bool Image<Channels, BitDepth>::saveImpl(const std::filesystem::path& destPath, 
             }
 
         }, tagVariant);
-}
-
-/*
-    The following overload specializations are defined so that we can load images
-    with any bit depth / channel combination that's supported by stb_image.
-    It's a compilation error to give a bit depth or channel type that's not used in
-    these overload specializations
-*/
-
-// Grey specializations
-template<>
-inline stbi_uc* Image<Y, stbi_uc>::loadImpl(const std::filesystem::path& filePath,
-                                                int& width, int& height, int& channels)
-{
-    return stbi_load(filePath.string().c_str(), &width, &height, &channels, STBI_grey);
-}
-
-template<>
-inline stbi_us* Image<Y, stbi_us>::loadImpl(const std::filesystem::path& filePath,
-                                                int& width, int& height, int& channels)
-{
-    return stbi_load_16(filePath.string().c_str(), &width, &height, &channels, STBI_grey);
-}
-
-template<>
-inline float* Image<Y, float>::loadImpl(const std::filesystem::path& filePath,
-                                         int& width, int& height, int& channels)
-{
-    return stbi_loadf(filePath.string().c_str(), &width, &height, &channels, STBI_grey);
-}
-
-// Grey alpha specializations
-template<>
-inline stbi_uc* Image<YA, stbi_uc>::loadImpl(const std::filesystem::path& filePath,
-                                                     int& width, int& height, int& channels)
-{
-    return stbi_load(filePath.string().c_str(), &width, &height, &channels, STBI_grey_alpha);
-}
-
-template<>
-inline stbi_us* Image<YA, stbi_us>::loadImpl(const std::filesystem::path& filePath,
-                                                     int& width, int& height, int& channels)
-{
-    return stbi_load_16(filePath.string().c_str(), &width, &height, &channels, STBI_grey_alpha);
-}
-
-template<>
-inline float* Image<YA, float>::loadImpl(const std::filesystem::path& filePath,
-                                          int& width, int& height, int& channels)
-{
-    return stbi_loadf(filePath.string().c_str(), &width, &height, &channels, STBI_grey_alpha);
-}
-
-// RGB specializations
-template<>
-inline stbi_uc* Image<RGB, stbi_uc>::loadImpl(const std::filesystem::path& filePath,
-                                               int& width, int& height, int& channels)
-{
-    return stbi_load(filePath.string().c_str(), &width, &height, &channels, STBI_rgb);
-}
-
-template<>
-inline stbi_us* Image<RGB, stbi_us>::loadImpl(const std::filesystem::path& filePath,
-                                               int& width, int& height, int& channels)
-{
-    return stbi_load_16(filePath.string().c_str(), &width, &height, &channels, STBI_rgb);
-}
-
-template<>
-inline float* Image<RGB, float>::loadImpl(const std::filesystem::path& filePath,
-                                           int& width, int& height, int& channels)
-{
-    return stbi_loadf(filePath.string().c_str(), &width, &height, &channels, STBI_rgb);
-}
-
-// RGB alpha specializations
-template<>
-inline stbi_uc* Image<RGBA, stbi_uc>::loadImpl(const std::filesystem::path& filePath,
-                                                    int& width, int& height, int& channels)
-{
-    return stbi_load(filePath.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
-}
-
-template<>
-inline stbi_us* Image<RGBA, stbi_us>::loadImpl(const std::filesystem::path& filePath,
-                                                    int& width, int& height, int& channels)
-{
-    return stbi_load_16(filePath.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
-}
-
-template<>
-inline float* Image<RGBA, float>::loadImpl(const std::filesystem::path& filePath,
-                                            int& width, int& height, int& channels)
-{
-    return stbi_loadf(filePath.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
 }
 }

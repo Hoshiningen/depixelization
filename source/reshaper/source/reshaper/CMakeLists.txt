@@ -4,9 +4,11 @@ include(${CMAKE_DIR}/LinkSTB.cmake)
 
 set(RESHAPER_INCLUDE_DIR ${SOURCE_DIR}/reshaper/include/reshaper)
 
-set(sources Image.cpp)
+set(sources Image.cpp ImageUtil.cpp SimilarityGraph.cpp)
 set(includes ${RESHAPER_INCLUDE_DIR}/Image.h
-             ${RESHAPER_INCLUDE_DIR}/Pixel.h)
+             ${RESHAPER_INCLUDE_DIR}/ImageUtil.h
+             ${RESHAPER_INCLUDE_DIR}/Pixel.h
+             ${RESHAPER_INCLUDE_DIR}/SimilarityGraph.h)
 
 add_library(reshaper STATIC ${sources} ${includes})
 add_dependencies(reshaper reshaper-impl)

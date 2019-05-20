@@ -6,10 +6,17 @@ include(GoogleTest)
 
 set(TESTS_INCLUDE_DIR ${SOURCE_DIR}/reshaper/include/tests)
 
-set(sources ImageViewTests.cpp ImageTests.cpp)
+set(sources 
+    ImageTests.cpp 
+    ImageUtilTests.cpp
+    ImageViewTests.cpp
+    SimilarityGraphTests.cpp)
+
 set(includes 
+    ${TESTS_INCLUDE_DIR}/ImageTests.h
+    ${TESTS_INCLUDE_DIR}/ImageUtilTests.h
     ${TESTS_INCLUDE_DIR}/ImageViewTests.h
-    ${TESTS_INCLUDE_DIR}/ImageTests.h)
+    ${TESTS_INCLUDE_DIR}/SimilarityGraphTests.h)
 
 add_executable(reshaper-tests ${sources} ${includes})
 
