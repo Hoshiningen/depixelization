@@ -18,9 +18,9 @@ TEST_F(ImageUtilTests, YCbCr_To_RGB_RoundTrip)
     // Save it so we can visualize
     std::filesystem::path YCbCrPath = "../../images/enemy_2_YCbCr.png";
     if (converted)
-        baseImage.save(YCbCrPath);
+        converted.value().save(YCbCrPath);
 
-    Image<YCbCr, stbi_uc> baseImage_YCbCr{ "../../images/enemy_2_YCbCr.png" };
+    Image<YCbCr, stbi_uc> baseImage_YCbCr{ YCbCrPath };
     ASSERT_TRUE(baseImage_YCbCr.isLoaded());
     
     // Convert the loaded YCbCr back to RGB color space
@@ -30,7 +30,7 @@ TEST_F(ImageUtilTests, YCbCr_To_RGB_RoundTrip)
     // Save it so we can visualize
     std::filesystem::path RGBPath = "../../images/enemy_2_rgb.png";
     if (converted2)
-        baseImage_YCbCr.save(RGBPath);
+        converted2.value().save(RGBPath);
 
 
     // Compare the converted RGB image with the original

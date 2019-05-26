@@ -1,17 +1,25 @@
 #pragma once
 
+#include <Heuristics.h>
 #include <Image.h>
+#include <Implementation.h>
 
 #include <memory>
 #include <ostream>
+#include <variant>
 
 namespace dpa::graph
 {
+namespace internal
+{
+class SimilarityGraphImpl;
+}
+
 /*
     A graph representation of an image, where each node represents
     a pixel, and connected edges indicate pixels that are similar
 */
-class SimilarityGraph final
+class SimilarityGraph final : private dpa::internal::Implementation
 {
 public:
 
@@ -26,14 +34,7 @@ public:
 
         @param image The image to build the graph from
     */
-    explicit SimilarityGraph(const dpa::image::Image<dpa::image::YCbCr, stbi_uc>& image);
-
-    /*
-        Declared to make the Impl struct a complete type
-    */
-    ~SimilarityGraph();
-    SimilarityGraph(SimilarityGraph&&) noexcept;
-    SimilarityGraph& operator=(SimilarityGraph&&) noexcept;
+    explicit SimilarityGraph(const dpa::image::Image<dpa::image::RGB, stbi_uc>& image);
 
     /*
         Builds the similarity graph from the given image
@@ -41,19 +42,44 @@ public:
         @param image The image in YCbCr color space to build the graph from
         @returns True if the graph was built, false otherwise
     */
-    bool build(const dpa::image::Image<dpa::image::YCbCr, stbi_uc>& image);
+    bool build(const dpa::image::Image<dpa::image::RGB, stbi_uc>& image);
     
+    /*
+        Applies the given heuristic to the similarity graph,
+        which modifies the edges in the graph
+
+        @param heuristic The heuristic to apply to the graph
+    */
+    void applyHeuristic(heuristics::Heuristic heuristic);
+
     /*
         Prints a non-graphical representation of the graph
 
         @param stream The stream to write to
     */
-    void printGraph(std::ostream& stream) const noexcept;
+    void printGraph(std::ostream& stream);
+
+    /*
+        Writes a .tex file to the given ostream. This can be compiled into
+        a pdf using pdflatex
+
+        @param output The output stream to write the .tex file too
+        @returns True if the write was successful, false otherwise
+    */
+    bool writeTex(std::ostream& output,
+        heuristics::FilteredEdges filteredEdges = heuristics::FilteredEdges::eNone);
 
 private:
 
-    struct Impl;
-    std::unique_ptr<Impl> m_pImpl{ nullptr };
+    /*
+        Creates the implementation object
+    */
+    std::shared_ptr<std::any> createImpl() override;
+
+    /*
+        Retrieves the implementation object
+    */
+    std::shared_ptr<internal::SimilarityGraphImpl> impl();
 
 };
 }

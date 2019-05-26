@@ -34,6 +34,9 @@ public:
     Image(const std::filesystem::path& filePath);
     Image(const internal::Point2D& dimensions);
 
+    Image(const Image& other);
+    Image& operator=(const Image& other);
+
     ~Image();
 
     bool save(const std::filesystem::path& destPath) const noexcept;
@@ -48,6 +51,8 @@ public:
     bool setPixelAt(const internal::Point2D& position, const Channels<BitDepth>& pixel);
 
 private:
+
+    void createImageView(const internal::Point2D& dimensions);
 
     template<std::size_t N>
     bool checkExtension(const std::filesystem::path& filePath, const std::array<std::string, N>& extensions) const noexcept;
@@ -102,11 +107,38 @@ Image<Channels, BitDepth>::Image(const std::filesystem::path& filePath)
 template<template<typename> class Channels, typename BitDepth>
 Image<Channels, BitDepth>::Image(const internal::Point2D& dimensions)
 {
-    const auto [width, height] = dimensions;
-    const auto dataSize = width * height * channel_count_v<Channels>;
+    createImageView(dimensions);
+}
 
-    m_pData = reinterpret_cast<BitDepth*>(calloc(dataSize, sizeof(BitDepth)));
-    m_view = internal::ImageView<Channels, BitDepth>{ m_pData, dimensions };
+template<template<typename> class Channels, typename BitDepth>
+Image<Channels, BitDepth>::Image(const Image& other)
+    : Image(std::make_tuple(other.getWidth(), other.getHeight()))
+{
+    *this = other;
+}
+
+template<template<typename> class Channels, typename BitDepth>
+Image<Channels, BitDepth>& Image<Channels, BitDepth>::operator=(const Image& other)
+{
+    if (this == &other)
+        return *this;
+
+    m_loaded = other.isLoaded();
+    createImageView(std::make_tuple(other.getWidth(), other.getHeight()));
+
+    for (auto h = 0; h < other.getHeight(); ++h)
+    {
+        for (auto w = 0; w < other.getWidth(); ++w)
+        {
+            if (auto pixel = other.getPixelAt({ w, h }); pixel)
+            {
+                if (!setPixelAt({ w, h }, pixel.value()))
+                    throw std::runtime_error("Could not set the source image's pixels.");
+            }
+        }
+    }
+
+    return *this;
 }
 
 /*
@@ -250,6 +282,16 @@ template<template<typename> class Channels, typename BitDepth>
 bool Image<Channels, BitDepth>::setPixelAt(const internal::Point2D& position, const Channels<BitDepth>& pixel)
 {
     return m_view.setPixelAt(position, pixel);
+}
+
+template<template<typename> class Channels, typename BitDepth>
+void Image<Channels, BitDepth>::createImageView(const internal::Point2D& dimensions)
+{
+    const auto [width, height] = dimensions;
+    const auto dataSize = width * height * channel_count_v<Channels>;
+
+    m_pData = reinterpret_cast<BitDepth*>(calloc(dataSize, sizeof(BitDepth)));
+    m_view = internal::ImageView<Channels, BitDepth>{ m_pData, dimensions };
 }
 
 /*
