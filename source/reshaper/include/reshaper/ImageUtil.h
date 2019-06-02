@@ -2,6 +2,7 @@
 
 #include <Image.h>
 
+#include <optional>
 #include <type_traits>
 
 namespace dpa::image::utility
@@ -79,7 +80,7 @@ bool foreach_pixel(const dpa::image::Image<Channels, BitDepth>& image, Predicate
     @returns True if every pixel was transformed, false otherwise
 */
 template<template<typename> class Channels, typename BitDepth>
-bool RGB_To_YCbCr(Image<Channels, BitDepth>& image);
+std::optional<Image<YCbCr, BitDepth>> RGB_To_YCbCr(const Image<Channels, BitDepth>& image);
 
 /*
     Converts an image in YCbCr color space to RGB colorspace
@@ -88,5 +89,5 @@ bool RGB_To_YCbCr(Image<Channels, BitDepth>& image);
     @returns True if every pixel was transformed, false otherwise
 */
 template<template<typename> class Channels, typename BitDepth>
-bool YCbCr_To_RGB(Image<Channels, BitDepth>& image);
+std::optional<Image<RGB, BitDepth>> YCbCr_To_RGB(const Image<Channels, BitDepth>& image);
 }

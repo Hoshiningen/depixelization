@@ -74,7 +74,7 @@ ImageView<Channels, BitDepth>::ImageView(BitDepth* pixelData, const Point2D& dim
     std::tie(m_width, m_height) = dimensions;
 
     if (!m_pData || m_width <= 0 || m_height <= 0)
-        throw new std::invalid_argument("Invalid arguments given to the view.");
+        throw std::invalid_argument("Invalid arguments given to the view.");
 }
 
 /*

@@ -4,8 +4,19 @@ include(${CMAKE_DIR}/LinkSTB.cmake)
 
 set(PRIVATE_INCLUDE_DIR ${SOURCE_DIR}/reshaper/include/private)
 
-set(sources ImageView.cpp)
-set(includes ${PRIVATE_INCLUDE_DIR}/ImageView.h)
+set(sources
+    HeuristicHelper.cpp
+    ImageView.cpp
+    Implementation.cpp
+    SimilarityGraphImpl.cpp)
+
+set(includes
+    ${PRIVATE_INCLUDE_DIR}/GraphUtils.h
+    ${PRIVATE_INCLUDE_DIR}/GraphVisualizer.h
+    ${PRIVATE_INCLUDE_DIR}/HeuristicHelper.h
+    ${PRIVATE_INCLUDE_DIR}/ImageView.h
+    ${PRIVATE_INCLUDE_DIR}/Implementation.h
+    ${PRIVATE_INCLUDE_DIR}/SimilarityGraphImpl.h)
 
 add_library(reshaper-impl STATIC ${sources} ${includes})
 
