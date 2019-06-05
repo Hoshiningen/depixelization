@@ -1,7 +1,7 @@
 # Depixelization
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
-project(depixelization CXX)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+project(Depixelization CXX)
 
 option(DEPIXELIZATION_BUILD_TESTS "Build unit tests" ON)
 

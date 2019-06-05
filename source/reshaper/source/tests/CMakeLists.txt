@@ -10,13 +10,16 @@ set(sources
     ImageTests.cpp 
     ImageUtilTests.cpp
     ImageViewTests.cpp
-    SimilarityGraphTests.cpp)
+    SimilarityGraphTests.cpp
+    VoronoiTests.cpp)
 
 set(includes 
     ${TESTS_INCLUDE_DIR}/ImageTests.h
     ${TESTS_INCLUDE_DIR}/ImageUtilTests.h
     ${TESTS_INCLUDE_DIR}/ImageViewTests.h
-    ${TESTS_INCLUDE_DIR}/SimilarityGraphTests.h)
+    ${TESTS_INCLUDE_DIR}/SimilarityGraphTests.h
+    ${TESTS_INCLUDE_DIR}/VoronoiTests.h
+    ${TESTS_INCLUDE_DIR}/TestUtility.h)
 
 add_executable(reshaper-tests ${sources} ${includes})
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <GraphUtils.h>
+#include <GraphVisualizationStrategy.h>
 
-#include <filesystem>
 #include <fstream>
 #include <tuple>
 
@@ -10,72 +10,22 @@
 
 namespace dpa::graph::internal
 {
-
 /*
-    A DFS Visitor that writes lateX output for each node and edge
-    that it visits.
-*/
-class LateXGraphWriter : public boost::default_dfs_visitor
-{
-public:
-
-    LateXGraphWriter(const utility::Point2D<int>& imageDims, std::ostream& output)
-        : m_imageDims(imageDims), m_output(output)
-    {}
-
-    /*
-        Generates LaTeX output for each vertex in the graph
-
-        @param vertex The vertex to serialize
-        @graph The graph the vertex belongs too
-    */
-    template <class Vertex, class Graph>
-    void initialize_vertex(Vertex vertex, const Graph& graph)
-    {
-        const auto [imageWidth, imageHeight] = m_imageDims;
-        auto [x, y] = utility::ExpandIndex(vertex, imageWidth);
-
-        // Flip the image since we store the points different than
-        // how they'll be rendered
-        y = imageHeight - y;
-
-        m_output << "\\node[circle, thick, draw=black!100, minimum size=5mm, fill={rgb,255:"
-                 << "red," << static_cast<int>(graph[vertex].Y) << ";"
-                 << "green," << static_cast<int>(graph[vertex].Cb) << ";"
-                 << "blue," << static_cast<int>(graph[vertex].Cr) << "}] (" << vertex << ")"
-                 << "at (" << x << ", " << y << "){};\n";
-    }
-
-
-    /*
-        Generates LaTeX output for each edge in the graph
-
-        @param edge The edge to serialize
-        @graph The graph the edge belongs too
-    */
-    template<typename Edge, typename Graph>
-    void examine_edge(Edge edge, const Graph& graph)
-    {
-        const auto start = boost::source(edge, graph);
-        const auto end = boost::target(edge, graph);
-
-        m_output << "\\draw (" << start << ") -- (" << end << "){};\n";
-    }
-
-private:
-
-    std::ostream& m_output;
-    const utility::Point2D<int>& m_imageDims;
-
-};
-
-/*
-    A class that produces graphical output of a similarity graph
+    A class that produces graphical output of a graph
 */
 template<typename Graph>
-class GraphVisualizer
+class LaTeXGraphVisualizer
 {
 public:
+
+    explicit LaTeXGraphVisualizer(ILaTeXVisualizationStrategy<Graph>& strategy) noexcept;
+
+    /*
+        Sets the visualization strategy for the graph
+
+        @param strategy The strategy to visualize the graph with
+    */
+    void setVisualizationStrategy(ILaTeXVisualizationStrategy<Graph>& strategy) noexcept;
 
     /*
         Writes the graph into a LaTeX format, which can be visualized
@@ -87,7 +37,7 @@ public:
         @returns True if the file was written, false otherwise
     */
     bool writeTex(const Graph& graph, const std::tuple<int, int>& imageDims,
-                   std::ostream& output) const;
+                  std::ostream& output) const;
 
 private:
 
@@ -141,11 +91,26 @@ private:
     */
     void writeTikzStyles(const Graph& graph, std::ostream& output) const noexcept;
 
+private:
+
+    ILaTeXVisualizationStrategy<Graph>& m_strategy;
+
 };
 
 template<typename Graph>
-bool GraphVisualizer<Graph>::writeTex(const Graph& graph, const std::tuple<int, int>& imageDims,
-                                       std::ostream& output) const
+LaTeXGraphVisualizer<Graph>::LaTeXGraphVisualizer(ILaTeXVisualizationStrategy<Graph>& strategy) noexcept
+    : m_strategy(strategy)
+{}
+
+template<typename Graph>
+void LaTeXGraphVisualizer<Graph>::setVisualizationStrategy(ILaTeXVisualizationStrategy<Graph>& strategy) noexcept
+{
+    m_strategy = strategy;
+}
+
+template<typename Graph>
+bool LaTeXGraphVisualizer<Graph>::writeTex(const Graph& graph, const std::tuple<int, int>& imageDims,
+                                           std::ostream& output) const
 {
     if (!output.good())
         return false;
@@ -156,54 +121,36 @@ bool GraphVisualizer<Graph>::writeTex(const Graph& graph, const std::tuple<int, 
 }
 
 template<typename Graph>
-void GraphVisualizer<Graph>::writeFile(const Graph& graph, const std::tuple<int, int>& imageDims,
-                                       std::ostream& output) const noexcept
+void LaTeXGraphVisualizer<Graph>::writeFile(const Graph& graph, const std::tuple<int, int>& imageDims,
+                                            std::ostream& output) const noexcept
 {
-    writeHeader(graph, output);
-    writeDocument(graph, imageDims, output);
+    m_strategy.writeHeader(graph, output);
+    m_strategy.writeDocument(graph, imageDims, output);
 }
 
 template<typename Graph>
-void GraphVisualizer<Graph>::writeHeader(const Graph& graph, std::ostream& output) const noexcept
+void LaTeXGraphVisualizer<Graph>::writeHeader(const Graph& graph, std::ostream& output) const noexcept
 {
-    boost::ignore_unused_variable_warning(graph);
-
-    output << "\\documentclass{standalone}";
-    output << "\\usepackage{tikz}";
-    output << "\\usetikzlibrary{ positioning }";
-    output << "\\usetikzlibrary{ patterns }";
-    output << "\\usetikzlibrary{ fit }";
+    m_strategy.writeHeader(graph, output);
 }
 
 template<typename Graph>
-void GraphVisualizer<Graph>::writeDocument(const Graph& graph, const std::tuple<int, int>& imageDims,
-                                           std::ostream& output) const noexcept
+void LaTeXGraphVisualizer<Graph>::writeDocument(const Graph& graph, const std::tuple<int, int>& imageDims,
+                                                std::ostream& output) const noexcept
 {
-    output << "\\begin{document}";
-    writeTikzPicture(graph, imageDims, output);
-    output << "\\end{document}";
+    m_strategy.writeDocument(graph, imageDims, output);
 }
 
 template<typename Graph>
-void GraphVisualizer<Graph>::writeTikzPicture(const Graph& graph, const std::tuple<int, int>& imageDims,
-                                              std::ostream& output) const noexcept
+void LaTeXGraphVisualizer<Graph>::writeTikzPicture(const Graph& graph, const std::tuple<int, int>& imageDims,
+                                                   std::ostream& output) const noexcept
 {
-    output << "\\begin{tikzpicture}";
-    writeTikzStyles(graph, output);
-
-    // Use the graph writer to write the nodes and edges
-    boost::depth_first_search(graph, boost::visitor(LateXGraphWriter{imageDims, output}));
-
-    output << "\\end{tikzpicture}";
+    m_strategy.writeTikzPicture(graph, imageDims, output);
 }
 
 template<typename Graph>
-void GraphVisualizer<Graph>::writeTikzStyles(const Graph& graph, std::ostream& output) const noexcept
+void LaTeXGraphVisualizer<Graph>::writeTikzStyles(const Graph& graph, std::ostream& output) const noexcept
 {
-    boost::ignore_unused_variable_warning(graph);
-
-    output << "[";
-    output << "node/.style={circle, draw=black, thick, minimum size=7mm}";
-    output << "]";
+    m_strategy.writeTikzStyles(graph, output);
 }
 }
