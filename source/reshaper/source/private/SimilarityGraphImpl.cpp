@@ -2,6 +2,7 @@
 
 #include <ImageUtil.h>
 #include <GraphUtils.h>
+#include <SimilarityGraphVisualizationStrategy.h>
 
 #include <boost/graph/graph_utility.hpp>
 
@@ -129,7 +130,7 @@ void SimilarityGraphImpl::connectForwardDiagonally(const utility::Point2D<Vertex
 bool SimilarityGraphImpl::setNodeProperties(const di::Image<di::YCbCr, stbi_uc>& image)
 {
     // The graph needs to be initialized with verticies first
-    if (!m_graph.m_matrix.size())
+    if (!boost::num_vertices(m_graph))
         return false;
 
     return di::utility::foreach_pixel(image,
@@ -267,8 +268,23 @@ bool SimilarityGraphImpl::writeTex(std::ostream& output, heuristics::FilteredEdg
 {
     auto filter = CreateEdgeFilter(filteredEdges);
     auto filteredGraph = boost::filtered_graph(m_graph, filter);
-    auto visualizer = GraphVisualizer<decltype(filteredGraph)>{};
+
+    auto strategy = SimilarityGraphVisualizationStrategy<decltype(filteredGraph)>{};
+    auto visualizer = LaTeXGraphVisualizer<decltype(filteredGraph)>{ strategy };
 
     return visualizer.writeTex(filteredGraph, m_imageDims, output);
+}
+
+std::set<std::tuple<std::size_t, std::size_t>> SimilarityGraphImpl::getEdges(heuristics::FilteredEdges filteredEdges) noexcept
+{
+    std::set<std::tuple<std::size_t, std::size_t>> edges;
+
+    auto filter = CreateEdgeFilter(filteredEdges);
+    auto filteredGraph = boost::filtered_graph(m_graph, filter);
+
+    for (const auto& edge : boost::make_iterator_range(boost::edges(filteredGraph)))
+        edges.insert({boost::source(edge, filteredGraph), boost::target(edge, filteredGraph)});
+
+    return edges;
 }
 }

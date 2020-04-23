@@ -19,10 +19,12 @@ set(HEURISTICS_INCLUDE
     ${RESHAPER_INCLUDE_DIR}/SparsePixelsHeuristic.h)  
 
 set(GRAPH_SOURCE
-    SimilarityGraph.cpp)
+    SimilarityGraph.cpp
+    Voronoi.cpp)
 
 set(GRAPH_INCLUDE
-    ${RESHAPER_INCLUDE_DIR}/SimilarityGraph.h)
+    ${RESHAPER_INCLUDE_DIR}/SimilarityGraph.h
+    ${RESHAPER_INCLUDE_DIR}/Voronoi.h)
 
 set(IMAGE_SOURCE
     Image.cpp

@@ -82,6 +82,12 @@ bool SimilarityGraph::writeTex(std::ostream& output, heuristics::FilteredEdges f
     return impl()->writeTex(output, filteredEdges);
 }
 
+std::set<std::tuple<std::size_t, std::size_t>> SimilarityGraph::getEdges(heuristics::FilteredEdges filteredEdges) noexcept
+{
+    return impl()->getEdges(filteredEdges);
+}
+
+
 std::shared_ptr<internal::SimilarityGraphImpl> SimilarityGraph::impl()
 {
     return dpa::internal::any_pointer_cast<internal::SimilarityGraphImpl>(Implementation::impl());

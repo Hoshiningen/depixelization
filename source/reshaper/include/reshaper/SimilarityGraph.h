@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ostream>
+#include <set>
 #include <variant>
 
 namespace dpa::graph
@@ -68,6 +69,15 @@ public:
     */
     bool writeTex(std::ostream& output,
         heuristics::FilteredEdges filteredEdges = heuristics::FilteredEdges::eNone);
+
+    /*
+        Gets all the edges from the similarity graph
+
+        @param filteredEdges The edges to filter from the graph
+        @returns The edges in the similarity graph
+    */
+    std::set<std::tuple<std::size_t, std::size_t>> getEdges(
+        heuristics::FilteredEdges filteredEdges = heuristics::FilteredEdges::eAll) noexcept;
 
 private:
 

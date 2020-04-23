@@ -8,15 +8,20 @@ set(sources
     HeuristicHelper.cpp
     ImageView.cpp
     Implementation.cpp
-    SimilarityGraphImpl.cpp)
+    SimilarityGraphImpl.cpp
+    VoronoiImpl.cpp)
 
 set(includes
     ${PRIVATE_INCLUDE_DIR}/GraphUtils.h
     ${PRIVATE_INCLUDE_DIR}/GraphVisualizer.h
+    ${PRIVATE_INCLUDE_DIR}/GraphVisualizationStrategy.h
     ${PRIVATE_INCLUDE_DIR}/HeuristicHelper.h
     ${PRIVATE_INCLUDE_DIR}/ImageView.h
     ${PRIVATE_INCLUDE_DIR}/Implementation.h
-    ${PRIVATE_INCLUDE_DIR}/SimilarityGraphImpl.h)
+    ${PRIVATE_INCLUDE_DIR}/SimilarityGraphImpl.h
+    ${PRIVATE_INCLUDE_DIR}/SimilarityGraphVisualizationStrategy.h
+    ${PRIVATE_INCLUDE_DIR}/VoronoiImpl.h
+    ${PRIVATE_INCLUDE_DIR}/VoronoiGraphVisualizationStrategy.h)
 
 add_library(reshaper-impl STATIC ${sources} ${includes})
 

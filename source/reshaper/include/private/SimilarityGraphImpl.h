@@ -13,6 +13,7 @@
 #pragma warning( push )
 #pragma warning( disable: 4996 4127 4100 )
 
+#include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/filtered_graph.hpp>
@@ -20,6 +21,7 @@
 #pragma warning( pop )
 
 #include <functional>
+#include <set>
 #include <type_traits>
 
 namespace di = dpa::image;
@@ -108,6 +110,49 @@ public:
     void printGraph(std::ostream& stream) const noexcept;
 
     /*
+        Writes a .tex file to the given ostream. This can be compiled into
+        a pdf using pdflatex
+
+        @param output The output stream to write the .tex file too
+        @returns True if the write was successful, false otherwise
+    */
+    bool writeTex(std::ostream& output, heuristics::FilteredEdges flags);
+
+    /*
+        Gets all the edges from the similarity graph
+
+        @param filteredEdges The edges to filter from the graph
+        @returns The edges in the similarity graph
+    */
+    std::set<std::tuple<std::size_t, std::size_t>> getEdges(
+        heuristics::FilteredEdges filteredEdges = heuristics::FilteredEdges::eAll) noexcept;
+
+    /*
+        Sets the edge properties based on the results of the applied
+        heuristic
+
+        @param heuristic The heuristic that was run
+        @param callback A callback function that sets the appropriate
+                        edge property in the graph
+    */
+    template<typename Visitor, typename Callback>
+    void setEdgeProperties(const Visitor& heuristic, Callback callback)
+    {
+        for (const auto [markedEdge, value] : heuristic.getMarkedEdges())
+        {
+            const auto [start, end] = markedEdge;
+            const auto [edge, found] = boost::edge(start, end, m_graph);
+
+            if (!found)
+                throw std::runtime_error("Couldn't map the marked edge with what's in the graph");
+
+            callback(edge, value);
+        }
+    }
+
+private:
+
+    /*
         Connects each of the nodes together along each row
 
         @param dims The images dimensions
@@ -142,38 +187,6 @@ public:
         @returns True if the node properties were set, false otherwise
     */
     bool setNodeProperties(const di::Image<di::YCbCr, stbi_uc>& image);
-
-    /*
-        Writes a .tex file to the given ostream. This can be compiled into
-        a pdf using pdflatex
-
-        @param output The output stream to write the .tex file too
-        @returns True if the write was successful, false otherwise
-    */
-    bool writeTex(std::ostream& output, heuristics::FilteredEdges flags);
-
-    /*
-        Sets the edge properties based on the results of the applied
-        heuristic
-
-        @param heuristic The heuristic that was run
-        @param callback A callback function that sets the appropriate
-                        edge property in the graph
-    */
-    template<typename Visitor, typename Callback>
-    void setEdgeProperties(const Visitor& heuristic, Callback callback)
-    {
-        for (const auto [markedEdge, value] : heuristic.getMarkedEdges())
-        {
-            const auto [start, end] = markedEdge;
-            const auto [edge, found] = boost::edge(start, end, m_graph);
-
-            if (!found)
-                throw std::runtime_error("Couldn't map the marked edge with what's in the graph");
-
-            callback(edge, value);
-        }
-    }
 
     /*
         Creates and edge filtering function based on the specified filters.

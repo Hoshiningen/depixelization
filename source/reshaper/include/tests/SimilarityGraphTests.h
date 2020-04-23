@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SimilarityGraph.h>
+#include <TestUtility.h>
 
 #include <gtest/gtest.h>
 
@@ -40,7 +41,6 @@ std::istream& operator>>(std::istream& input, DissimilarEdgeData& data)
 {
     std::size_t s;
     std::size_t t;
-
 
     input >> s >> t;
 
@@ -82,18 +82,6 @@ protected:
         out << "8 <--> 4 5 7 \n";
 
         return out.str();
-    }
-
-    template<typename EdgeData>
-    std::vector<EdgeData> getSolutionData(const std::filesystem::path& file)
-    {
-        std::ifstream input{ file };
-        std::vector<EdgeData> ret;
-
-        std::copy(std::istream_iterator<EdgeData>(input), std::istream_iterator<EdgeData>(),
-            std::back_inserter(ret));
-
-        return ret;
     }
 
 protected:
